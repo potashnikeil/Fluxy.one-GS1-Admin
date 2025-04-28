@@ -49,6 +49,18 @@ const AuthCheck = ({ children }) => {
   return children;
 };
 
+// Компонент для отображения защищенного контента с сайдбаром
+const ProtectedLayout = ({ children }) => {
+  return (
+    <div className="main-container">
+      <Sidebar />
+      <div className="content-with-sidebar">
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -60,22 +72,70 @@ const App = () => {
             
             {/* Защищенные маршруты */}
             <Route element={<PrivateRoute />}>
-              <Route path="/" element={<Navigate to="/products" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/stats" element={<Stats />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/upload" element={<CSVUpload />} />
+              <Route path="/" element={
+                <ProtectedLayout>
+                  <Navigate to="/products" replace />
+                </ProtectedLayout>
+              } />
+              <Route path="/dashboard" element={
+                <ProtectedLayout>
+                  <Dashboard />
+                </ProtectedLayout>
+              } />
+              <Route path="/products" element={
+                <ProtectedLayout>
+                  <Products />
+                </ProtectedLayout>
+              } />
+              <Route path="/stats" element={
+                <ProtectedLayout>
+                  <Stats />
+                </ProtectedLayout>
+              } />
+              <Route path="/profile" element={
+                <ProtectedLayout>
+                  <Profile />
+                </ProtectedLayout>
+              } />
+              <Route path="/upload" element={
+                <ProtectedLayout>
+                  <CSVUpload />
+                </ProtectedLayout>
+              } />
             </Route>
 
             {/* Админские маршруты */}
             <Route path="/admin" element={<PrivateRoute adminOnly />}>
-              <Route index element={<Navigate to="companies" replace />} />
-              <Route path="companies" element={<AdminCompanies />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="imports" element={<AdminImports />} />
-              <Route path="reports" element={<AdminReports />} />
+              <Route index element={
+                <ProtectedLayout>
+                  <Navigate to="/admin/companies" replace />
+                </ProtectedLayout>
+              } />
+              <Route path="companies" element={
+                <ProtectedLayout>
+                  <AdminCompanies />
+                </ProtectedLayout>
+              } />
+              <Route path="users" element={
+                <ProtectedLayout>
+                  <AdminUsers />
+                </ProtectedLayout>
+              } />
+              <Route path="products" element={
+                <ProtectedLayout>
+                  <AdminProducts />
+                </ProtectedLayout>
+              } />
+              <Route path="imports" element={
+                <ProtectedLayout>
+                  <AdminImports />
+                </ProtectedLayout>
+              } />
+              <Route path="reports" element={
+                <ProtectedLayout>
+                  <AdminReports />
+                </ProtectedLayout>
+              } />
             </Route>
           </Routes>
         </AuthCheck>
