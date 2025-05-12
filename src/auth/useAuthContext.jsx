@@ -20,8 +20,9 @@ axiosInstance.interceptors.request.use(
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(getToken());
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -30,14 +31,21 @@ export const AuthProvider = ({ children }) => {
         
         if (isAuthenticated && authUser) {
           setUser(authUser);
-          setToken(getToken());
+          const storedToken = getToken();
+          if (storedToken) {
+            setToken(storedToken);
+          } else {
+            console.log('Токен отсутствует при наличии пользователя');
+            await apiLogout();
+          }
         } else {
           console.log('Авторизация не подтверждена');
-          apiLogout();
+          await apiLogout();
         }
       } catch (error) {
         console.error('Ошибка при инициализации авторизации:', error);
-        apiLogout();
+        setError(error.message);
+        await apiLogout();
       } finally {
         setIsLoading(false);
       }
@@ -47,8 +55,22 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (userData, authToken) => {
-    setUser(userData);
-    setToken(authToken);
+    if (!userData || !authToken) {
+      console.error('Отсутствуют данные для входа:', { userData, authToken });
+      setError('Отсутствуют данные для входа');
+      return;
+    }
+    
+    try {
+      localStorage.setItem('token', authToken);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      setToken(authToken);
+      setError(null);
+    } catch (error) {
+      console.error('Ошибка при сохранении данных авторизации:', error);
+      setError('Ошибка при сохранении данных авторизации');
+    }
   };
 
   const logout = async () => {
@@ -57,19 +79,22 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Ошибка при выходе из системы:', error);
     } finally {
-      setUser(null);
-      setToken(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    setUser(null);
+    setToken(null);
+      setError(null);
     }
   };
 
   const value = { 
     user, 
-    token, 
-    isAuthenticated: !!token && !!user, 
-    login,
-    logout, 
-    setUser,
-    isLoading 
+    token,
+    isLoading,
+    error,
+    login, 
+    logout,
+    isAuthenticated: !!user && !!token
   };
 
   return (

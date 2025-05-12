@@ -17,11 +17,11 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const result = await login(email, password);
-      if (result.success) {
+    const result = await login(email, password);
+    if (result.success) {
         authLogin(result.user, result.token);
         navigate(result.user.role === 'admin' ? '/admin/companies' : '/products');
-      } else {
+    } else {
         setError(result.message || 'Ошибка входа');
       }
     } catch (error) {
@@ -42,26 +42,26 @@ export default function Login() {
           </div>
         )}
         <div className="space-y-2">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+          required
             autoComplete="username"
             disabled={isLoading}
-          />
-          <input
-            type="password"
-            placeholder="Пароль"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Пароль"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+          required
             autoComplete="current-password"
             disabled={isLoading}
-          />
+        />
         </div>
         <button
           type="submit"

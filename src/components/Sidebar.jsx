@@ -13,7 +13,7 @@ const Sidebar = () => {
           <h2 className="text-xl font-bold">Fluxy DPP</h2>
         </div>
         <nav className="sidebar-menu">
-          {/* Ссылка на профиль доступна всем */}
+        {/* Ссылка на профиль доступна всем */}
           <Link 
             to="/profile" 
             className={`sidebar-menu-item ${location.pathname === '/profile' ? 'active' : ''}`}
@@ -21,9 +21,9 @@ const Sidebar = () => {
             Profile
           </Link>
 
-          {/* Ссылки для пользователей с ролью user */}
-          {user?.role === 'user' && (
-            <>
+        {/* Ссылки для пользователей с ролью user */}
+        {user?.role === 'user' && (
+          <>
               <Link 
                 to="/dashboard" 
                 className={`sidebar-menu-item ${location.pathname === '/dashboard' ? 'active' : ''}`}
@@ -42,12 +42,12 @@ const Sidebar = () => {
               >
                 Stats
               </Link>
-            </>
-          )}
+          </>
+        )}
 
-          {/* Ссылки только для админов */}
-          {user?.role === 'admin' && (
-            <>
+        {/* Ссылки только для админов */}
+        {user?.role === 'admin' && (
+          <>
               <Link 
                 to="/admin/companies" 
                 className={`sidebar-menu-item ${location.pathname === '/admin/companies' ? 'active' : ''}`}
@@ -78,9 +78,9 @@ const Sidebar = () => {
               >
                 Reports
               </Link>
-            </>
-          )}
-        </nav>
+          </>
+        )}
+      </nav>
       </div>
     </aside>
   );

@@ -13,6 +13,7 @@ import AdminUsers from './pages/admin/Users';
 import AdminProducts from './pages/admin/Products';
 import AdminImports from './pages/admin/Imports';
 import AdminReports from './pages/admin/Reports';
+import ProductDetails from './pages/admin/ProductDetails';
 
 import CSVUpload from './components/CSVUpload';
 import Login from './pages/Login';
@@ -66,9 +67,9 @@ const App = () => {
     <BrowserRouter>
       <AuthProvider>
         <AuthCheck>
-          <Routes>
+        <Routes>
             {/* Публичные маршруты */}
-            <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
             
             {/* Защищенные маршруты */}
             <Route element={<PrivateRoute />}>
@@ -126,6 +127,11 @@ const App = () => {
                   <AdminProducts />
                 </ProtectedLayout>
               } />
+              <Route path="products/:gtin" element={
+                <ProtectedLayout>
+                  <ProductDetails />
+                </ProtectedLayout>
+              } />
               <Route path="imports" element={
                 <ProtectedLayout>
                   <AdminImports />
@@ -137,7 +143,7 @@ const App = () => {
                 </ProtectedLayout>
               } />
             </Route>
-          </Routes>
+              </Routes>
         </AuthCheck>
       </AuthProvider>
     </BrowserRouter>

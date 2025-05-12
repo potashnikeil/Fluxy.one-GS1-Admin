@@ -13,38 +13,42 @@ import { useNavigate } from 'react-router-dom';
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const toast = useRef(null);
+  const confirmDialog = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadProducts();
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getAllProducts();
+        console.log('Полученные данные продуктов:', JSON.stringify(data, null, 2));
+        console.log('Структура первого продукта:', JSON.stringify(data[0], null, 2));
+        console.log('Поля продукта:', Object.keys(data[0]));
+        console.log('Значения полей первого продукта:', Object.entries(data[0]).map(([key, value]) => `${key}: ${value}`));
+          setProducts(data);
+      } catch (err) {
+        console.error('Ошибка при загрузке продуктов:', err);
+        setError(err.message || 'Ошибка при загрузке продуктов');
+        toast.current.show({
+          severity: 'error',
+          summary: 'Ошибка',
+          detail: err.message || 'Не удалось загрузить список продуктов',
+          life: 3000
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      const data = await getAllProducts();
-      console.log('Полученные данные продуктов:', JSON.stringify(data, null, 2));
-      console.log('Структура первого продукта:', JSON.stringify(data[0], null, 2));
-      console.log('Поля продукта:', Object.keys(data[0]));
-      console.log('Значения полей первого продукта:', Object.entries(data[0]).map(([key, value]) => `${key}: ${value}`));
-      setProducts(data);
-    } catch (error) {
-      console.error('Ошибка при загрузке продуктов:', error);
-      toast.current.show({
-        severity: 'error',
-        summary: 'Ошибка',
-        detail: error.message || 'Не удалось загрузить продукты',
-        life: 3000
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const confirmDelete = (product) => {
-    confirmDialog({
+    confirmDialog.current.show({
       message: `Вы уверены, что хотите удалить продукт "${product.name}"?`,
       header: 'Подтверждение удаления',
       icon: 'pi pi-exclamation-triangle',
@@ -147,19 +151,17 @@ const Products = () => {
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <ProgressSpinner />
-      </div>
-    );
-  }
-
   return (
     <div className="p-4">
       <Toast ref={toast} />
-      <ConfirmDialog />
+      <ConfirmDialog ref={confirmDialog} />
       
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded">
+          {error}
+        </div>
+      )}
+
       <Card>
         <DataTable
           value={products}
@@ -168,7 +170,8 @@ const Products = () => {
           rowsPerPageOptions={[5, 10, 25, 50]}
           globalFilter={globalFilter}
           header={header}
-          emptyMessage="Продукты не найдены"
+          emptyMessage={loading ? "Загрузка..." : "Продукты не найдены"}
+          loading={loading}
           className="p-datatable-sm"
           stripedRows
           showGridlines

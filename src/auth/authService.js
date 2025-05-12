@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = 'http://localhost:5000/api';
 
 // Создаем экземпляр axios с базовыми настройками
 const api = axios.create({
@@ -26,113 +26,89 @@ api.interceptors.request.use(
 
 export const checkAuth = async () => {
   try {
-    console.log('Проверка авторизации...');
-    const token = localStorage.getItem('token');
-    
+    const token = getToken();
     if (!token) {
-      console.log('Токен отсутствует в localStorage');
       return { isAuthenticated: false };
     }
 
-    const response = await api.get('/check');
-    console.log('Ответ проверки авторизации:', response.data);
-    
-    if (response.data?.user) {
-      return { isAuthenticated: true, user: response.data.user };
-    }
-    
-    return { isAuthenticated: false };
-  } catch (error) {
-    console.error('Ошибка при проверке авторизации:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message
+    const response = await axios.get(`${API_URL}/auth/check`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
+
+    return { 
+      isAuthenticated: true, 
+      user: response.data.user 
+    };
+  } catch (error) {
+    console.error('Ошибка при проверке авторизации:', error.response?.data || error.message);
     return { isAuthenticated: false };
   }
 };
 
 export const login = async (email, password) => {
   try {
-    console.log('Отправка запроса на авторизацию:', { email });
+    console.log('Попытка входа:', { email });
+    const response = await axios.post(`${API_URL}/auth/login`, { email, password });
     
-    const response = await api.post('/login', { email, password });
-    console.log('Полный ответ сервера:', JSON.stringify(response.data, null, 2));
-    
-    // Проверяем наличие данных в ответе
-    if (!response.data) {
-      console.error('Пустой ответ от сервера');
-      return { 
-        success: false, 
-        message: 'Пустой ответ от сервера' 
-      };
+    if (response.data.message) {
+      return { success: false, message: response.data.message };
     }
 
     const { token, user } = response.data;
-
-    // Подробная проверка формата ответа
-    if (!token) {
-      console.error('Отсутствует токен в ответе:', response.data);
+  
+    if (!token || !user) {
       return { 
         success: false, 
-        message: 'Отсутствует токен доступа в ответе сервера' 
+        message: 'Отсутствует токен или данные пользователя в ответе' 
       };
     }
 
-    if (!user) {
-      console.error('Отсутствуют данные пользователя в ответе:', response.data);
-      return { 
-        success: false, 
-        message: 'Отсутствуют данные пользователя в ответе сервера' 
-      };
-    }
-
-    // Проверяем обязательные поля пользователя
-    const requiredFields = ['id', 'email', 'role'];
-    const missingFields = requiredFields.filter(field => !user[field]);
-    
-    if (missingFields.length > 0) {
-      console.error('Отсутствуют обязательные поля пользователя:', missingFields);
-      return {
-        success: false,
-        message: `Неполные данные пользователя: отсутствуют ${missingFields.join(', ')}`
-      };
-    }
-
-    console.log('Данные пользователя прошли валидацию, сохраняем в localStorage');
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
 
-    return { success: true, user, token };
+    return { success: true, token, user };
   } catch (error) {
-    console.error('Ошибка при авторизации:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message
-    });
-    
+    console.error('Ошибка при входе:', error.response?.data || error.message);
     return { 
       success: false, 
-      message: error.response?.data?.message || error.message || 'Ошибка входа'
+      message: error.response?.data?.message || 'Ошибка при входе в систему'
     };
   }
 };
 
-export const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-};
-
-export const getCurrentUser = () => {
+export const logout = async () => {
   try {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    const token = getToken();
+    if (token) {
+      await axios.post(`${API_URL}/auth/logout`, null, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    }
   } catch (error) {
-    console.error('Ошибка при получении пользователя:', error);
-    return null;
+    console.error('Ошибка при выходе:', error.response?.data || error.message);
   }
 };
 
 export const getToken = () => {
-  return localStorage.getItem('token');
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('Токен не найден в localStorage');
+      return null;
+    }
+    return token;
+  } catch (error) {
+    console.error('Ошибка при получении токена:', error);
+    return null;
+  }
+};
+
+export const getCurrentUser = () => {
+  try {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  } catch (error) {
+    console.error('Ошибка при получении данных пользователя:', error);
+    return null;
+  }
 };

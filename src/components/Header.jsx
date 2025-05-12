@@ -15,7 +15,7 @@ const Header = () => {
     <header className="bg-white shadow p-4 flex justify-between items-center">
       <h1 className="text-xl font-semibold">Fluxy Admin Panel</h1>
       <div className="flex items-center gap-4">
-        {/* Отображаем имя и роль пользователя */}
+      {/* Отображаем имя и роль пользователя */}
         <div className="text-gray-600">{user ? `${user.email} (${user.role})` : "Guest"}</div>
         {user && (
           <button
