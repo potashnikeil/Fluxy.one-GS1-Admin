@@ -17,16 +17,16 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-    const result = await login(email, password);
-    if (result.success) {
+      const result = await login(email, password);
+      if (result.success) {
         authLogin(result.user, result.token);
         navigate(result.user.role === 'admin' ? '/admin/companies' : '/products');
-    } else {
-        setError(result.message || 'Ошибка входа');
+      } else {
+        setError(result.message || 'Login error');
       }
     } catch (error) {
-      console.error('Ошибка при входе:', error);
-      setError('Произошла ошибка при входе в систему');
+      console.error('Login error:', error);
+      setError('An error occurred while logging in');
     } finally {
       setIsLoading(false);
     }
@@ -35,40 +35,40 @@ export default function Login() {
   return (
     <div className="flex items-center justify-center h-screen bg-gray-50">
       <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-80 space-y-4">
-        <h1 className="text-xl font-bold text-center">Вход в систему</h1>
+        <h1 className="text-xl font-bold text-center">Login</h1>
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded">
             {error}
           </div>
         )}
         <div className="space-y-2">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
+            required
             autoComplete="username"
             disabled={isLoading}
-        />
-        <input
-          type="password"
-          placeholder="Пароль"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
+            required
             autoComplete="current-password"
             disabled={isLoading}
-        />
+          />
         </div>
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
-          {isLoading ? 'Вход...' : 'Войти'}
+          {isLoading ? 'Logging in...' : 'Login'}
         </button>
       </form>
     </div>

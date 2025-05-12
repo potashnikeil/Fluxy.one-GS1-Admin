@@ -13,7 +13,7 @@ const Sidebar = () => {
           <h2 className="text-xl font-bold">Fluxy DPP</h2>
         </div>
         <nav className="sidebar-menu">
-        {/* Ссылка на профиль доступна всем */}
+        {/* Profile link available to everyone */}
           <Link 
             to="/profile" 
             className={`sidebar-menu-item ${location.pathname === '/profile' ? 'active' : ''}`}
@@ -21,7 +21,7 @@ const Sidebar = () => {
             Profile
           </Link>
 
-        {/* Ссылки для пользователей с ролью user */}
+        {/* Links for users with role 'user' */}
         {user?.role === 'user' && (
           <>
               <Link 
@@ -45,26 +45,26 @@ const Sidebar = () => {
           </>
         )}
 
-        {/* Ссылки только для админов */}
+        {/* Links only for admins */}
         {user?.role === 'admin' && (
           <>
               <Link 
                 to="/admin/companies" 
                 className={`sidebar-menu-item ${location.pathname === '/admin/companies' ? 'active' : ''}`}
               >
-                Компании
+                Companies
               </Link>
               <Link 
                 to="/admin/users" 
                 className={`sidebar-menu-item ${location.pathname === '/admin/users' ? 'active' : ''}`}
               >
-                Пользователи
+                Users
               </Link>
               <Link 
                 to="/admin/products" 
                 className={`sidebar-menu-item ${location.pathname === '/admin/products' ? 'active' : ''}`}
               >
-                Все продукты
+                All Products
               </Link>
               <Link 
                 to="/admin/imports" 

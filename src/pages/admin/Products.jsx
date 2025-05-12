@@ -49,11 +49,11 @@ const Products = () => {
 
   const confirmDelete = (product) => {
     confirmDialog.current.show({
-      message: `Вы уверены, что хотите удалить продукт "${product.name}"?`,
-      header: 'Подтверждение удаления',
+      message: `Are you sure you want to delete product "${product.name}"?`,
+      header: 'Delete Confirmation',
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Да',
-      rejectLabel: 'Нет',
+      acceptLabel: 'Yes',
+      rejectLabel: 'No',
       accept: () => handleDelete(product.gtin)
     });
   };
@@ -64,15 +64,15 @@ const Products = () => {
       setProducts(products.filter(p => p.gtin !== gtin));
       toast.current.show({
         severity: 'success',
-        summary: 'Успешно',
-        detail: 'Продукт удален',
+        summary: 'Success',
+        detail: 'Product has been deleted',
         life: 3000
       });
     } catch (error) {
       toast.current.show({
         severity: 'error',
-        summary: 'Ошибка',
-        detail: error.message || 'Не удалось удалить продукт',
+        summary: 'Error',
+        detail: error.message || 'Failed to delete product',
         life: 3000
       });
     }
@@ -82,10 +82,10 @@ const Products = () => {
     const headerMap = {
       product_id: 'ID',
       gtin13: 'GTIN-13',
-      product_name: 'Название',
-      status: 'Статус',
-      customer_name: 'Компания',
-      entity: 'Категория'
+      product_name: 'Name',
+      status: 'Status',
+      customer_name: 'Company',
+      entity: 'Category'
     };
     return headerMap[fieldName] || fieldName;
   };
@@ -93,7 +93,7 @@ const Products = () => {
   const statusBodyTemplate = (rowData) => {
     return (
       <span className={`px-2 py-1 rounded-full text-sm ${rowData.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-        {rowData.status ? 'Активен' : 'Неактивен'}
+        {rowData.status ? 'Active' : 'Inactive'}
       </span>
     );
   };
@@ -105,25 +105,25 @@ const Products = () => {
           icon="pi pi-external-link"
           className="p-button-rounded p-button-secondary p-button-sm"
           onClick={() => window.open(`/products/${rowData.gtin13}`, '_blank')}
-          tooltip="Открыть публичную страницу"
+          tooltip="Open public page"
         />
         <Button
           icon="pi pi-list"
           className="p-button-rounded p-button-info p-button-sm"
           onClick={() => navigate(`/admin/products/${rowData.gtin13}`)}
-          tooltip="Детальное описание"
+          tooltip="View details"
         />
         <Button
           icon="pi pi-pencil"
           className="p-button-rounded p-button-success p-button-sm"
           onClick={() => navigate(`/admin/products/edit/${rowData.gtin13}`)}
-          tooltip="Редактировать"
+          tooltip="Edit"
         />
         <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-danger p-button-sm"
           onClick={() => confirmDelete(rowData)}
-          tooltip="Удалить"
+          tooltip="Delete"
         />
       </div>
     );
@@ -131,18 +131,19 @@ const Products = () => {
 
   const header = (
     <div className="flex justify-between items-center">
-      <h2 className="text-xl font-bold">Все продукты</h2>
+      <h2 className="text-xl font-bold">All Products</h2>
       <div className="flex gap-3 items-center">
-        <span className="p-input-icon-left">
-          <i className="pi pi-search" />
+        <div className="relative">
+          <i className="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            placeholder="Поиск..."
+            placeholder="Search..."
+            className="pl-10 w-64"
           />
-        </span>
+        </div>
         <Button
-          label="Добавить продукт"
+          label="Add Product"
           icon="pi pi-plus"
           className="p-button-success"
           onClick={() => navigate('/admin/products/create')}
@@ -150,6 +151,17 @@ const Products = () => {
       </div>
     </div>
   );
+
+  const filterProducts = (products, filter) => {
+    if (!filter) return products;
+    
+    const searchTerm = filter.toLowerCase();
+    return products.filter(product => 
+      product.gtin13?.toLowerCase().includes(searchTerm) ||
+      product.customer_name?.toLowerCase().includes(searchTerm) ||
+      product.product_name?.toLowerCase().includes(searchTerm)
+    );
+  };
 
   return (
     <div className="p-4">
@@ -164,27 +176,27 @@ const Products = () => {
 
       <Card>
         <DataTable
-          value={products}
+          value={filterProducts(products, globalFilter)}
           paginator
           rows={10}
           rowsPerPageOptions={[5, 10, 25, 50]}
           globalFilter={globalFilter}
           header={header}
-          emptyMessage={loading ? "Загрузка..." : "Продукты не найдены"}
+          emptyMessage={loading ? "Loading..." : "No products found"}
           loading={loading}
           className="p-datatable-sm"
           stripedRows
           showGridlines
           responsiveLayout="scroll"
         >
-          <Column field="customer_name" header="Компания" sortable style={{ width: '180px' }} />
+          <Column field="customer_name" header="Company" sortable style={{ width: '180px' }} />
           <Column field="gtin13" header="GTIN-13" sortable style={{ width: '150px' }} />
-          <Column field="product_name" header="Название" sortable style={{ minWidth: '200px' }} />
-          <Column field="entity" header="Категория" sortable style={{ width: '150px' }} />
-          <Column field="status" header="Статус" body={statusBodyTemplate} sortable style={{ width: '120px' }} />
+          <Column field="product_name" header="Name" sortable style={{ minWidth: '200px' }} />
+          <Column field="entity" header="Category" sortable style={{ width: '150px' }} />
+          <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ width: '120px' }} />
           <Column
             body={actionBodyTemplate}
-            header="Действия"
+            header="Actions"
             style={{ width: '180px' }}
             exportable={false}
           />

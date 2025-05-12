@@ -19,11 +19,11 @@ const CSVUpload = () => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const company_id = 1; // Пример: замените на ID текущей компании
+    const company_id = 1; // Example: replace with current company ID
     formData.append('company_id', company_id);
 
     try {
-      const response = await axios.post('/api/upload', formData, {  // Подключаем к API
+      const response = await axios.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

@@ -77,27 +77,27 @@ const ProductDetails = () => {
     return [
       {
         title: 'Digital Link URI',
-        description: 'Стандартный URI формат GS1 Digital Link',
+        description: 'Standard GS1 Digital Link URI format',
         url: `${baseUrl}/01/${gtin}`
       },
       {
         title: 'Web URI',
-        description: 'Веб-формат URI для GTIN',
+        description: 'Web URI format for GTIN',
         url: `${baseUrl}/gtin/${gtin}`
       },
       {
         title: 'JSON-LD Context',
-        description: 'Контекст JSON-LD для структурированных данных',
+        description: 'JSON-LD context for structured data',
         url: `${baseUrl}/gtin/${gtin}?format=jsonld`
       },
       {
         title: 'GS1 Product Page',
-        description: 'Страница продукта на GS1 Registry Platform',
+        description: 'Product page on GS1 Registry Platform',
         url: `https://gepir.gs1.org/index.php/search-by-gtin?gtin=${gtin}`
       },
       {
         title: 'GS1 Verify Link',
-        description: 'Проверка GTIN в базе GS1',
+        description: 'Verify GTIN in GS1 database',
         url: `https://www.gs1.org/services/verify/gtin/${gtin}`
       }
     ];
@@ -138,7 +138,7 @@ const ProductDetails = () => {
         if (toast.current) {
           toast.current.show({
             severity: 'error',
-            summary: 'Ошибка',
+            summary: 'Error',
             detail: err.message || 'Произошла ошибка при загрузке продукта',
             life: 3000
           });
@@ -190,10 +190,10 @@ const ProductDetails = () => {
         <Toast ref={toast} />
         <Card className="p-4">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-red-600 mb-4">Ошибка</h2>
+            <h2 className="text-xl font-bold text-red-600 mb-4">Error</h2>
             <p className="mb-4">{error}</p>
             <Button 
-              label="Вернуться к списку" 
+              label="Back to List" 
               icon="pi pi-arrow-left"
               onClick={() => navigate('/admin/products')}
             />
@@ -209,9 +209,9 @@ const ProductDetails = () => {
         <Toast ref={toast} />
         <Card className="p-4">
           <div className="text-center">
-            <h2 className="text-xl font-bold mb-4">Продукт не найден</h2>
+            <h2 className="text-xl font-bold mb-4">Product Not Found</h2>
             <Button 
-              label="Вернуться к списку" 
+              label="Back to List" 
               icon="pi pi-arrow-left"
               onClick={() => navigate('/admin/products')}
             />
@@ -245,7 +245,7 @@ const ProductDetails = () => {
 
   const formatPropertyValue = (value, format) => {
     if (value === null || value === undefined) {
-      return 'Не указано';
+      return 'Not specified';
     }
 
     try {
@@ -255,14 +255,14 @@ const ProductDetails = () => {
         case 'number':
           return typeof value === 'number' ? value.toLocaleString() : value.toString();
         case 'boolean':
-          return value ? 'Да' : 'Нет';
+          return value ? 'Yes' : 'No';
         case 'string':
         default:
           return String(value);
       }
     } catch (error) {
       console.error('Error formatting property value:', error);
-      return 'Ошибка формата';
+      return 'Format error';
     }
   };
 
@@ -355,7 +355,7 @@ const ProductDetails = () => {
 
   const renderPropertyValue = (property) => {
     if (!property || (property.value === undefined && property.value !== null)) {
-      return <div className="property-value text-gray-400 italic text-sm">Не указано</div>;
+      return <div className="property-value text-gray-400 italic text-sm">Not specified</div>;
     }
     
     try {
@@ -367,14 +367,14 @@ const ProductDetails = () => {
       );
     } catch (error) {
       console.error('Error rendering property value:', error);
-      return <div className="property-value text-red-500 bg-red-50 px-3 py-2 rounded-lg">Ошибка отображения</div>;
+      return <div className="property-value text-red-500 bg-red-50 px-3 py-2 rounded-lg">Format error</div>;
     }
   };
 
   return (
     <div className="p-4">
       <Toast ref={toast} />
-      <Card title="Детали продукта" className="p-4">
+      <Card title="Product Details" className="p-4">
         <div className="flex justify-end mb-4">
           {availableLanguages.length > 0 && (
             <Dropdown
@@ -382,16 +382,16 @@ const ProductDetails = () => {
               options={availableLanguages.map(code => ({ label: code.toUpperCase(), value: code }))}
               onChange={(e) => setSelectedLanguage(e.value)}
               optionLabel="label"
-              placeholder="Выберите язык"
+              placeholder="Select language"
               className="w-48"
             />
           )}
         </div>
 
-        {/* Общая информация о продукте (в самом верху) */}
+        {/* General product information */}
         {(product?.product || product) && (
           <div className="border rounded-lg p-4 mb-6 bg-white">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Общая информация</h3>
+            <h3 className="text-xl font-bold mb-4 text-gray-800">General Information</h3>
             <table className="min-w-full text-sm">
               <tbody>
                 {Object.entries(product?.product || product).map(([key, value]) => (
@@ -411,10 +411,10 @@ const ProductDetails = () => {
           </div>
         )}
 
-        {/* Кнопка для показа/скрытия debug-блока */}
+        {/* Debug button */}
         <div className="mb-4">
           <Button
-            label={showDebug ? 'Скрыть Debug Info' : 'Показать Debug Info'}
+            label={showDebug ? 'Hide Debug Info' : 'Show Debug Info'}
             icon={showDebug ? 'pi pi-eye-slash' : 'pi pi-eye'}
             className="p-button-sm p-button-text"
             onClick={() => setShowDebug((v) => !v)}
@@ -460,7 +460,7 @@ const ProductDetails = () => {
                               {propMeta?.description || propMeta?.name || propertyKey}
                             </span>
                             <span className="text-lg text-gray-900">
-                              {propertyValue?.value ?? <span className="text-gray-400">Не указано</span>}
+                              {propertyValue?.value ?? <span className="text-gray-400">Not specified</span>}
                             </span>
                           </div>
                         );
@@ -473,7 +473,7 @@ const ProductDetails = () => {
 
         {/* QR-коды */}
         <div className="border rounded-lg p-4">
-          <h3 className="text-xl font-bold mb-4 text-gray-800">QR-коды</h3>
+          <h3 className="text-xl font-bold mb-4 text-gray-800">QR Codes</h3>
           
           {/* Отладочная информация - закомментирована */}
           {/* <div className="bg-yellow-50 border border-yellow-200 p-4 rounded mb-4">
@@ -508,7 +508,7 @@ const ProductDetails = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* PNG QR-код */}
             <div className="flex flex-col items-center">
-              <h4 className="text-sm font-medium text-gray-600 mb-2">PNG формат</h4>
+              <h4 className="text-sm font-medium text-gray-600 mb-2">PNG Format</h4>
               <div className="relative w-48 h-48 border rounded-lg p-2 bg-white">
                 <img 
                   src={getQRCodePaths()?.png}
@@ -519,8 +519,8 @@ const ProductDetails = () => {
                     e.target.style.display = 'none';
                     toast.current.show({
                       severity: 'error',
-                      summary: 'Ошибка',
-                      detail: 'Не удалось загрузить QR-код PNG',
+                      summary: 'Error',
+                      detail: 'Failed to load PNG QR code',
                       life: 3000
                     });
                   }}
@@ -528,7 +528,7 @@ const ProductDetails = () => {
               </div>
               <div className="flex gap-2 mt-4">
                 <Button 
-                  label="Скачать PNG" 
+                  label="Download PNG" 
                   icon="pi pi-download"
                   className="p-button-outlined"
                   onClick={() => {
@@ -547,14 +547,14 @@ const ProductDetails = () => {
                   icon="pi pi-eye"
                   className="p-button-outlined"
                   onClick={() => window.open(getFullQrUrl(getQRCodePaths()?.png), '_blank')}
-                  tooltip="Открыть в новой вкладке"
+                  tooltip="Open in new tab"
                 />
               </div>
             </div>
 
             {/* SVG QR-код */}
             <div className="flex flex-col items-center">
-              <h4 className="text-sm font-medium text-gray-600 mb-2">SVG формат</h4>
+              <h4 className="text-sm font-medium text-gray-600 mb-2">SVG Format</h4>
               <div className="relative w-48 h-48 border rounded-lg p-2 bg-white">
                 <img 
                   src={getQRCodePaths()?.svg}
@@ -565,8 +565,8 @@ const ProductDetails = () => {
                     e.target.style.display = 'none';
                     toast.current.show({
                       severity: 'error',
-                      summary: 'Ошибка',
-                      detail: 'Не удалось загрузить QR-код SVG',
+                      summary: 'Error',
+                      detail: 'Failed to load SVG QR code',
                       life: 3000
                     });
                   }}
@@ -574,7 +574,7 @@ const ProductDetails = () => {
               </div>
               <div className="flex gap-2 mt-4">
                 <Button 
-                  label="Скачать SVG" 
+                  label="Download SVG" 
                   icon="pi pi-download"
                   className="p-button-outlined"
                   onClick={() => {
@@ -593,7 +593,7 @@ const ProductDetails = () => {
                   icon="pi pi-eye"
                   className="p-button-outlined"
                   onClick={() => window.open(getFullQrUrl(getQRCodePaths()?.svg), '_blank')}
-                  tooltip="Открыть в новой вкладке"
+                  tooltip="Open in new tab"
                 />
               </div>
             </div>
@@ -601,18 +601,18 @@ const ProductDetails = () => {
 
           {/* Информация о QR-кодах */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Информация о QR-кодах:</h4>
+            <h4 className="text-sm font-medium text-gray-700 mb-2">QR Code Information:</h4>
             <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
-              <li>PNG формат подходит для большинства случаев использования</li>
-              <li>SVG формат обеспечивает лучшее качество при масштабировании</li>
-              <li>Оба формата содержат одинаковую информацию для сканирования</li>
+              <li>PNG format is suitable for most use cases</li>
+              <li>SVG format provides better quality when scaling</li>
+              <li>Both formats contain the same scanning information</li>
             </ul>
           </div>
         </div>
 
         {/* GS1 Ссылки */}
         <div className="border rounded-lg p-4">
-          <h3 className="text-xl font-bold mb-4 text-gray-800">GS1 Ссылки</h3>
+          <h3 className="text-xl font-bold mb-4 text-gray-800">GS1 Links</h3>
           <div className="space-y-6">
             {product && getGS1Links().map((link, index) => (
               <div key={index} className="flex flex-col">
