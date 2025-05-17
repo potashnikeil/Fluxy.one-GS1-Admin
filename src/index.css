@@ -38,12 +38,12 @@
 
 /* Контент с учетом сайдбара */
 .content-with-sidebar {
-  @apply ml-64 p-4;
+  @apply ml-56 p-4;
 }
 
 /* Сайдбар */
 .sidebar {
-  @apply fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg;
+  @apply fixed top-0 left-0 h-full w-56 bg-gray-800 text-white shadow-lg;
 }
 
 .sidebar-content {

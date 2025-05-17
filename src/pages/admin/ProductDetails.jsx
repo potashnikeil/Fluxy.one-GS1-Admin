@@ -53,10 +53,21 @@ const ProductDetails = () => {
   const [showDebug, setShowDebug] = useState(false);
 
   const getAvailableLanguages = (productData) => {
-    if (!productData?.languages || !Array.isArray(productData.languages)) {
-      return ['eng'];
+    console.log('Getting available languages from:', productData);
+    
+    // Получаем языки из values, исключая 'default'
+    if (productData?.values) {
+      const languages = Object.keys(productData.values).filter(lang => 
+        lang !== 'default' && 
+        productData.values[lang] && 
+        Object.keys(productData.values[lang]).length > 0
+      );
+      console.log('Languages with data:', languages);
+      return languages.length > 0 ? languages : ['eng'];
     }
-    return productData.languages;
+    
+    console.log('No languages found, returning default');
+    return ['eng'];
   };
 
   const getQRCodePaths = () => {
@@ -162,18 +173,18 @@ const ProductDetails = () => {
       console.log('Current product state:', product);
       console.log('Selected language:', selectedLanguage);
       console.log('Available values for selected language:', product.values?.[selectedLanguage]);
+      console.log('All available values:', product.values);
       console.log('Categories:', product.categories);
     }
   }, [product, selectedLanguage]);
 
   // Получаем доступные языки из данных продукта
-  const availableLanguages = product?.languages || ['eng'];
+  const availableLanguages = getAvailableLanguages(product);
 
   // Обновляем selectedLanguage при изменении product
   useEffect(() => {
-    if (product?.languages?.length > 0) {
-      setSelectedLanguage(product.languages[0]);
-    }
+    // Всегда устанавливаем английский как язык по умолчанию
+    setSelectedLanguage('eng');
   }, [product]);
 
   if (loading) {
@@ -223,6 +234,13 @@ const ProductDetails = () => {
 
   const getPropertyValue = (propertyKey) => {
     try {
+      console.log('Getting property value for:', {
+        propertyKey,
+        selectedLanguage,
+        availableValues: product?.values?.[selectedLanguage],
+        allValues: product?.values
+      });
+      
       const propertyData = product?.values?.[selectedLanguage]?.[propertyKey];
       if (!propertyData) {
         console.log(`No data found for property ${propertyKey} in language ${selectedLanguage}`);
@@ -375,17 +393,21 @@ const ProductDetails = () => {
     <div className="p-4">
       <Toast ref={toast} />
       <Card title="Product Details" className="p-4">
-        <div className="flex justify-end mb-4">
-          {availableLanguages.length > 0 && (
-            <Dropdown
-              value={selectedLanguage}
-              options={availableLanguages.map(code => ({ label: code.toUpperCase(), value: code }))}
-              onChange={(e) => setSelectedLanguage(e.value)}
-              optionLabel="label"
-              placeholder="Select language"
-              className="w-48"
-            />
-          )}
+        <div className="flex justify-start mb-4">
+          <div className="flex gap-0.5">
+            {availableLanguages.map(lang => (
+              <Button
+                key={lang}
+                label={lang.toUpperCase()}
+                className={`p-button-sm text-[9px] font-normal px-2 py-0.5 ${
+                  selectedLanguage === lang 
+                    ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
+                }`}
+                onClick={() => setSelectedLanguage(lang)}
+              />
+            ))}
+          </div>
         </div>
 
         {/* General product information */}
